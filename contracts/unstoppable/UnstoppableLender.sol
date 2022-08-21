@@ -39,7 +39,9 @@ contract UnstoppableLender is ReentrancyGuard {
         // Ensured by the protocol via the `depositTokens` function
         assert(poolBalance == balanceBefore);
         
+        // function to exploit
         damnValuableToken.transfer(msg.sender, borrowAmount);
+        // here we can call the function again and again and could exploit the contract
         
         IReceiver(msg.sender).receiveTokens(address(damnValuableToken), borrowAmount);
         

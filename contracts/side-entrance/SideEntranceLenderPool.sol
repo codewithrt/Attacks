@@ -21,6 +21,7 @@ contract SideEntranceLenderPool {
     }
 
     function withdraw() external {
+        // not vulnerable to reentrancy
         uint256 amountToWithdraw = balances[msg.sender];
         balances[msg.sender] = 0;
         payable(msg.sender).sendValue(amountToWithdraw);

